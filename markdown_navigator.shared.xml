@@ -1,6 +1,6 @@
 <application>
   <component name="ApplicationShared">
-    <PreviewSettings splitEditorLayout="FIRST" splitEditorPreview="PREVIEW" useGrayscaleRendering="false" zoomFactor="1.0" maxImageWidth="0" showPreviewTab="yes" showModifiedHtmlTab="false" showUnmodifiedHtmlTab="false" showGitHubPageIfSynced="false" allowBrowsingInPreview="false" synchronizeScrollPosition="false">
+    <PreviewSettings splitEditorLayout="FIRST" splitEditorPreview="NONE" useGrayscaleRendering="false" zoomFactor="1.0" maxImageWidth="0" showPreviewTab="yes" showModifiedHtmlTab="false" showUnmodifiedHtmlTab="false" showGitHubPageIfSynced="false" allowBrowsingInPreview="false" synchronizeScrollPosition="false">
       <PanelProvider>
         <provider providerId="com.vladsch.idea.multimarkdown.editor.javafx.html.panel" providerName="JavaFX WebView" />
       </PanelProvider>
