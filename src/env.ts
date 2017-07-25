@@ -5,8 +5,6 @@ import * as morgan from 'morgan';
 import normalizePort, { Port } from './helpers/normalizePort';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
-import viewHelperMiddleware from './middlewares';
-const pkg = require('../package.json');
 
 const DEFAULT_PORT: string = '2222';
 

@@ -4,7 +4,7 @@ import * as http from 'http';
 import { Port } from './helpers/normalizePort';
 import setupEnv from './env';
 
-const app: core.Express = express();
+const app: Express = express();
 setupEnv(app, express);
 
 const port: Port = app.get('port');
