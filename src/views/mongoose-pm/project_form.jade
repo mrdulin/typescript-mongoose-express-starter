@@ -1,0 +1,18 @@
+//
+   Created by Administrator on 2016/4/11.
+
+extends layout
+
+block content
+    h1= title
+    p Project owner: #{username}
+    form(id="CreateProjectForm" name="CreateProjectForm" method="post" action="")
+        input(type="hidden" name="userId" value="#{userId}")
+        input(type="hidden" name="projectId" value="#{projectId}")
+        div
+            label(for="projectName") Project name
+            input(type="text" id="projectName" name="projectName" placeholder="Enter project title..." value="#{projectName}")
+        div
+            label(for="tasks") tasks
+            textarea(id="tasks" name="tasks" cols="100" rows="10")= tasks
+        input(type="submit" value="#{buttonText}")

@@ -1,0 +1,13 @@
+//
+   Created by Administrator on 2016/4/11.
+
+extends layout
+
+block content
+    h1= title
+    form(id="loginForm", name="loginForm", method="post", action="")
+        label(for="email") Email
+        input(type="email", name="email", id="email")
+        input(type="submit" value="Login")
+    p Or new users can
+        a(href="/mongoose-pm/user/new") sign up

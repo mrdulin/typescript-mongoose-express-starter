@@ -1,0 +1,14 @@
+//
+   Created by Administrator on 2016/4/11.
+extends layout
+
+block content
+    h1= title
+    //- form的action留空，提交的时候，该表单会提交到当前表单所在的url地址
+    form(id="formUserProfile", method="post", action="")
+        label(for="username") username
+        input(id="username" type="text" name="username" value="#{name}")
+        label(for="email") email
+        input(id="email" name="email" type="email" value="#{email}")
+        input(type="submit" value="#{buttonText}")
+

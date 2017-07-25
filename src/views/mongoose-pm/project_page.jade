@@ -1,0 +1,21 @@
+//
+   Created by Administrator on 2016/4/12.
+
+extends layout
+
+block content
+    h1 Mongoose Project Management
+    h2= projectName
+    p Created by #{username}, Email: #{email}
+    p Tasks: #{tasks}
+
+    h3  Actions
+    ul
+        li
+            a(href="/mongoose-pm/project/new") Create a new project
+        li
+            a(href="/mongoose-pm/project/edit/#{projectId}") Edit
+        li
+            a(href="/mongoose-pm/project/delete/#{projectId}") Delete
+        li
+            a(href="/mongoose-pm/user") My profile

@@ -1,0 +1,27 @@
+{
+  "name": "typescript-mongoose-express-starter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:mrdulin/typescript-mongoose-express-starter.git",
+  "author": "mrdulin <novaline@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/copy-webpack-plugin": "^4.0.0",
+    "@types/ejs": "^2.3.33",
+    "@types/node": "^8.0.16",
+    "@types/webpack": "^3.0.5",
+    "copy-webpack-plugin": "^4.0.1",
+    "nodemon": "^1.11.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.2",
+    "webpack": "^3.3.0",
+    "webpack-node-externals": "^1.6.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.6",
+    "morgan": "^1.8.2"
+  }
+}
