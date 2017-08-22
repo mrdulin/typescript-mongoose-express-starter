@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {Express, Request, Response} from "express-serve-static-core";
+import { Express, Request, Response, NextFunction } from "express-serve-static-core";
 import * as http from 'http';
 import { Port } from './helpers/normalizePort';
 import setupEnv from './env';
@@ -21,8 +21,28 @@ server.on('listening', onListening);
 app.get('/', (req: Request, res: Response) => {
   res.render('index');
 });
-app.use('/mongoose-pm', mongoosePM);
+app.use('/mongoose-pm', mongoosePM(app));
 // -- routes end --
+
+// 404路由
+app.get('*', (req, res, next) => {
+  const err: any = new Error('404 not found');
+  err.status = 404;
+  next(err);
+});
+
+// 404错误处理中间件
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err.status !== 404) {
+    return next();
+  }
+  res.status(404).send(err.message);
+});
+
+//
+process.on('uncaughtException', function (err) {
+  console.error(err);
+});
 
 function onError(error: any) {
   if (error.syscall !== 'listen') {
@@ -53,5 +73,5 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  console.log('Listening on ' + bind);
+  console.log('服务器已启动，监听端口: ' + bind);
 }

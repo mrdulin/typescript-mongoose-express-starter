@@ -1,13 +1,21 @@
 import * as express from 'express';
-import { Router } from 'express-serve-static-core';
+import { Router, Express } from 'express-serve-static-core';
+import * as path from 'path';
 const router: Router = express.Router();
 import projectRouter from './project';
+import userRouter from './user';
 
-router.use('/project', projectRouter);
-router.use('/user', require('./user'));
+const createRoutes = (app: Express): Router => {
+  app.set('views', path.resolve(process.cwd(), 'build/views/mongoose-pm'));
+  router.use('/project', projectRouter);
+  router.use('/user', userRouter);
 
-router.get('/', (req, res) => {
-  res.render('./mongoose-pm/index.jade');
-});
+  router.get('/', (req, res) => {
+    res.render('./');
+  });
 
-export default router;
+  return router;
+};
+
+
+export default createRoutes;

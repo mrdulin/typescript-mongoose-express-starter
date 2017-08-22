@@ -31,12 +31,12 @@ UserSchema.statics = {
   findById
 };
 
-function findById(id, cb) {
-  return this.findOne({ _id: id }, cb);
-}
-
-function nameLengthValidator(name) {
-  return name && name.length > 4;
-}
-
 export const User = mongoose.model<IUser>('PM-User', UserSchema);
+
+function findById(id: number, cb: () => void) {
+  return User.findOne({ _id: id }, cb);
+}
+
+function nameLengthValidator(name: string): boolean {
+  return name.length > 4;
+}

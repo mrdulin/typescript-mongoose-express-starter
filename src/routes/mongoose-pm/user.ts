@@ -5,121 +5,156 @@ import { Project } from '../../models/mongoose-pm/Project';
 const router: Router = express.Router();
 
 router
+  /**
+   * 用户登录后首页
+   */
   .get('/', (req, res, next) => {
-    const user = req.cookies.user;
-    const isLogined = req.cookies.logined;
-    if (isLogined) {
-      res.render('./mongoose-pm/user_page.jade', {
+    const { user, logined } = req.cookies;
+
+    if (logined) {
+      res.render('user-page', {
         title: user.name,
         name: user.name,
         email: user.email,
         userId: user._id
       });
     } else {
-      res.redirect('/mongoose-pm/login');
+      res.redirect('login');
     }
   });
 
 router
   .route('/new')
+  /**
+   * 用户注册页
+   */
   .get((req, res, next) => {
-    res.render('./mongoose-pm/user_form.jade', {
-      title: 'Create user',
+    res.render('user-edit', {
+      title: '注册用户',
       name: '',
       email: '',
-      buttonText: "Join!"
+      buttonText: "注册"
     });
   })
+  /**
+   * 用户注册页提交
+   */
   .post((req, res, next) => {
-    new User({
-      name: req.body.username,
-      email: req.body.email,
-      modifiedOn: Date.now(),
-      lastLogin: Date.now()
-    }).save(function (err, user) {
-      if (err) {
-        console.log('err: ' + err);
-        if (err.code === 11000) {
-          res.redirect('/mongoose-pm/user/new?exists=true');
+    const { username: name, email } = req.body;
+    const now: number = Date.now();
+
+    new User({ name, email, modifiedOn: now, lastLogin: now })
+      .save((err, user) => {
+        if (err) {
+          console.log('err: ' + err);
+          if (err.code === 11000) {
+            res.redirect('../user/new?exists=true');
+          } else {
+            res.redirect('../?error=true');
+          }
         } else {
-          res.redirect('/mongoose-pm/?error=true');
+          console.log('user is: ' + user);
+          res.cookie('user', user);
+          res.cookie('logined', true);
+          User.update({ _id: user.id }, { $set: { lastLogin: Date.now() } }, () => {
+            res.redirect('../user');
+          });
         }
-      } else {
-        console.log('user is: ' + user);
-        res.cookie('user', user);
-        res.cookie('logined', true);
-        User.update({ _id: user.id }, { $set: { lastLogin: Date.now() } }, function () {
-          res.redirect('/mongoose-pm/user');
-        });
-      }
-    });
+      });
   });
 
 router
   .route('/edit')
+  /**
+   * 用户信息编辑页
+   */
   .get((req, res, next) => {
-    const user = req.cookies.user;
-    const isLogin = req.cookies.logined;
+    const { user, logined } = req.cookies;
 
-    if (isLogin) {
-      res.render('./mongoose-pm/user_form.jade', {
-        title: 'Edit user',
+    if (logined) {
+      res.render('user-edit', {
+        title: '编辑用户信息',
         _id: user._id,
         name: user.name,
         email: user.email,
-        buttonText: 'Save'
+        buttonText: '保存'
       });
-    } else {
-      res.redirect('/mongoose-pm/login.jade');
     }
+    res.redirect('../user/login');
   })
-  .post(function editUser(req, res, next) {
-    if (req.cookies.user._id) {
-      User.findById(req.cookies.user._id, function (err, user) {
+
+  /**
+   * 用户信息编辑页保存
+   */
+  .post((req, res, next) => {
+    const user = req.cookies.user;
+    if (user._id) {
+      User.findById(user._id, (err, userFound) => {
         if (err) {
           console.log(err);
-          res.redirect('/mongoose-pm/user?error=finding');
-        } else {
-          user.name = req.body.username;
-          user.email = req.body.email;
-          user.modifiedOn = Date.now();
-          user.save(function (error, userSaved) {
+          res.redirect('../user?error=finding');
+        }
+
+        if (userFound) {
+          const { username, email } = req.body;
+
+          userFound.name = username;
+          userFound.email = email;
+          userFound.modifiedOn = Date.now();
+
+          userFound.save((error, userSaved) => {
             if (error) return next(error);
-            console.log('User updated: ' + req.body.username);
+            console.log('User updated: ' + username);
             res.cookie('user', userSaved);
-            res.redirect('/mongoose-pm/user');
+            res.redirect('../user');
           });
         }
+
+        res.redirect('../user');
       });
     }
   });
 
 router
   .route('/delete')
-  .get(function renderDeleteUser(req, res, next) {
-    res.render('./mongoose-pm/user_delete_form.jade', {
-      title: 'Delete account',
-      username: req.cookies.user.name,
-      _id: req.cookies.user._id,
-      email: req.cookies.user.email
-    });
+  /**
+   * 账号删除页面
+   */
+  .get((req, res, next) => {
+    const user = req.cookies.user;
+    if (user) {
+
+      res.render('user-delete-form', {
+        title: '删除账号',
+        username: user.name,
+        _id: user._id,
+        email: user.email
+      });
+    }
+
+    res.redirect('../user/login');
+
   })
-  .post(function deleteUser(req, res, next) {
+
+  /**
+   * 账号删除提交
+   */
+  .post((req, res, next) => {
     if (req.body._id) {
-      User.findByIdAndRemove({ _id: req.body._id }, function (err, user) {
+      User.findByIdAndRemove({ _id: req.body._id }, (err, user) => {
         if (err) {
           console.log(err);
-          res.redirect('/mongoose-pm/user?error=deleting');
+          res.redirect('../user?error=deleting');
         } else {
-          console.log('User deleted: ', user);
-          Project.remove({ createdBy: user._id }, (error) => {
-            if (error) {
-              console.log(err);
-            } else {
-              res.clearCookie('user', 'logined');
-              res.redirect('/mongoose-pm/user');
-            }
-          });
+          if (user) {
+            console.log('User deleted: ', user);
+            Project.remove({ createdBy: user._id }, (error) => {
+              if (error) return next(error);
+              res.clearCookie('user');
+              res.clearCookie('logined');
+              res.redirect('../user/login');
+            });
+          }
         }
       });
     }
@@ -127,35 +162,45 @@ router
 
 router
   .route('/login')
-  .get(function renderLogin(req, res, next) {
-    res.render('./mongoose-pm/login.jade', {
-      title: 'Log in'
-    });
+  /**
+   * 用户登录页
+   */
+  .get((req, res, next) => {
+    res.render('login', { title: '登录' });
   })
-  .post(function login(req, res, next) {
+  /**
+   * 用户登录提交
+   */
+  .post((req, res, next) => {
     const email: string = req.body.email;
     if (email) {
-      User.findOne({ email }, 'email name _id').exec(function (err, user) {
+      User.findOne({ email }, 'email name _id').exec((err, user) => {
         if (err) {
-          res.redirect('/mongoose-pm/user/login?404=error');
+          res.redirect('?404=error');
         } else {
           if (user) {
             console.log('logined user is: ', user);
             res.cookie('user', user);
             res.cookie('logined', true);
-            res.redirect('/mongoose-pm/user');
-          } else {
-            res.redirect('/mongoose-pm/user/login?404=error');
+            res.redirect('../user');
           }
+          res.redirect('?404=error');
         }
       });
     } else {
-      res.redirect('/mongoose-pm/login?404=error')
+      res.redirect('?404=error');
     }
   });
 
 router
-  .post('/logout', function logout(req, res, next) {
+  /**
+   * 退出登录
+   */
+  .get('/logout', (req, res) => {
+    res.clearCookie('user');
+    res.clearCookie('logined');
+    res.redirect('login');
   });
 
-module.exports = router;
+
+export default router;

@@ -1,8 +1,12 @@
-import * as mongoose from 'mongoose';
+import mongoose = require('mongoose');
 
 const dbURI: string = 'mongodb://localhost:27017/typescript-mongoose-express-starter';
 
-mongoose.connect(dbURI);
+mongoose.Promise = global.Promise;
+
+mongoose.connect(dbURI, {
+  useMongoClient: true
+});
 
 mongoose.connection.on('connected', function () {
   console.log('已连接到数据库: ' + dbURI);

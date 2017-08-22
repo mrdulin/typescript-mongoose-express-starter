@@ -1,13 +1,11 @@
-//
-   Created by Administrator on 2016/4/11.
-
 extends layout
 
 block content
-    h1= title
-    form(id="loginForm", name="loginForm", method="post", action="")
-        label(for="email") Email
-        input(type="email", name="email", id="email")
-        input(type="submit" value="Login")
-    p Or new users can
-        a(href="/mongoose-pm/user/new") sign up
+  h1= title
+  // form表单的action为空时，将向当前url地址提交表单
+  form(id="loginForm", name="loginForm", method="post", action="")
+    label(for="email") 邮箱:
+    input(type="email", name="email")
+    input(type="submit" value="登录")
+  p 或者你可以?
+    a(href="/mongoose-pm/user/new") 注册

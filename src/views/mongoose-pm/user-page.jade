@@ -1,0 +1,22 @@
+extends layout
+block headjs
+  script.
+    var userId = "#{userId}";
+block content
+  h1 Mongoose Project Management
+  h2= name
+  p Email: #{email}
+    h3 Actions
+    ul
+      li
+        a(href="/mongoose-pm/project/new") Create a new project
+      li
+        a(href="/mongoose-pm/user/edit") Edit user info
+      li
+        a(href="/mongoose-pm/user/delete") Delete #{name}
+      li
+        a(href="/mongoose-pm/user/logout") Logout #{name}
+
+  h3 My Projects
+  ul#project-list
+      li loading...
