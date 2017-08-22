@@ -1,11 +1,13 @@
-var express = require('express');
-var router = express.Router();
-var User = require(__base + 'models/mongoose-pm/User');
+import * as express from 'express';
+import { Router } from 'express-serve-static-core';
+import { User } from '../../models/mongoose-pm/User';
+import { Project } from '../../models/mongoose-pm/Project';
+const router: Router = express.Router();
 
 router
-  .get('/', function renderUserProfile(req, res, next) {
-    var user = req.cookies.user;
-    var isLogined = req.cookies.logined;
+  .get('/', (req, res, next) => {
+    const user = req.cookies.user;
+    const isLogined = req.cookies.logined;
     if (isLogined) {
       res.render('./mongoose-pm/user_page.jade', {
         title: user.name,
@@ -20,7 +22,7 @@ router
 
 router
   .route('/new')
-  .get(function renderCreateUser(req, res, next) {
+  .get((req, res, next) => {
     res.render('./mongoose-pm/user_form.jade', {
       title: 'Create user',
       name: '',
@@ -28,7 +30,7 @@ router
       buttonText: "Join!"
     });
   })
-  .post(function createUser(req, res, next) {
+  .post((req, res, next) => {
     new User({
       name: req.body.username,
       email: req.body.email,
@@ -51,13 +53,14 @@ router
         });
       }
     });
-  })
+  });
 
 router
   .route('/edit')
-  .get(function renderEditUser(req, res, next) {
-    var user = req.cookies.user,
-      isLogin = req.cookies.logined;
+  .get((req, res, next) => {
+    const user = req.cookies.user;
+    const isLogin = req.cookies.logined;
+
     if (isLogin) {
       res.render('./mongoose-pm/user_form.jade', {
         title: 'Edit user',
@@ -80,17 +83,16 @@ router
           user.name = req.body.username;
           user.email = req.body.email;
           user.modifiedOn = Date.now();
-          user.save(function (err, userSaved) {
-            if (!err) {
-              console.log('User updated: ' + req.body.username);
-              res.cookie('user', userSaved);
-              res.redirect('/mongoose-pm/user');
-            }
+          user.save(function (error, userSaved) {
+            if (error) return next(error);
+            console.log('User updated: ' + req.body.username);
+            res.cookie('user', userSaved);
+            res.redirect('/mongoose-pm/user');
           });
         }
       });
     }
-  })
+  });
 
 router
   .route('/delete')
@@ -110,8 +112,8 @@ router
           res.redirect('/mongoose-pm/user?error=deleting');
         } else {
           console.log('User deleted: ', user);
-          Project.remove({ createdBy: user._id }, function (err) {
-            if (err) {
+          Project.remove({ createdBy: user._id }, (error) => {
+            if (error) {
               console.log(err);
             } else {
               res.clearCookie('user', 'logined');
@@ -121,7 +123,7 @@ router
         }
       });
     }
-  })
+  });
 
 router
   .route('/login')
@@ -131,9 +133,9 @@ router
     });
   })
   .post(function login(req, res, next) {
-    var email = req.body.email;
+    const email: string = req.body.email;
     if (email) {
-      User.findOne({ email: email }, 'email name _id').exec(function (err, user) {
+      User.findOne({ email }, 'email name _id').exec(function (err, user) {
         if (err) {
           res.redirect('/mongoose-pm/user/login?404=error');
         } else {
@@ -150,7 +152,7 @@ router
     } else {
       res.redirect('/mongoose-pm/login?404=error')
     }
-  })
+  });
 
 router
   .post('/logout', function logout(req, res, next) {

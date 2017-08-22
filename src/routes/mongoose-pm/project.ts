@@ -1,10 +1,14 @@
-var express = require('express');
-var router = express.Router();
-var Project = require(__base + 'models/mongoose-pm/Project');
+import * as express from 'express';
+import { Router } from 'express-serve-static-core';
+import { Project, IProject } from '../../models/mongoose-pm/Project';
+const router: Router = express.Router();
 
 router
   .route('/new')
-  .get(function (req, res, next) {
+  /**
+   * 新建project表单页
+   */
+  .get((req, res, next) => {
     if (req.cookies.logined) {
       res.render('./mongoose-pm/project_form.jade', {
         title: 'Create project',
@@ -19,13 +23,16 @@ router
       res.redirect('/mongoose-pm/login');
     }
   })
-  .post(function (req, res, next) {
+  /**
+   * 新建project提交表单
+   */
+  .post((req, res, next) => {
     new Project({
       projectName: req.body.projectName,
       tasks: req.body.tasks,
       createdBy: req.cookies.user._id,
       modifiedOn: Date.now()
-    }).save(function (err, project) {
+    }).save((err, project) => {
       if (err) {
         if (err === 11000) {
           res.redirect('/mongoose-pm/project/new?error=true');
@@ -37,7 +44,7 @@ router
         res.redirect('/mongoose-pm/user');
       }
     });
-  })
+  });
 
 router
   .get('/:id', function (req, res, next) {
@@ -46,9 +53,8 @@ router
         .findById(req.params.id)
         .populate('createdBy', 'name email')
         .exec(function (err, project) {
-          if (err) {
-            console.log(err);
-          } else {
+          if (err) return next(err);
+          if (project) {
             console.log('project is: ', project);
             res.render('./mongoose-pm/project_page.jade', {
               projectName: project.projectName,
@@ -64,16 +70,18 @@ router
       console.log('project id must be supplied');
       res.redirect('/mongoose-pm/user');
     }
-  })
+  });
 
 router
   .route('/edit/:id')
-  .get(function (req, res, next) {
+  /**
+   * project编辑页面
+   */
+  .get((req, res, next) => {
     if (req.params.id) {
-      Project.findById(req.params.id, function (err, project) {
-        if (err) {
-          console.log(err);
-        } else {
+      Project.findById(req.params.id, (err, project) => {
+        if (err) return next(err);
+        if (project) {
           console.log('project is: ', project);
           res.render('./mongoose-pm/project_form.jade', {
             title: "Edit project",
@@ -84,30 +92,35 @@ router
             tasks: project.tasks,
             buttonText: 'edit'
           });
+        } else {
+          res.json({ status: 'error', error: '没有找到project' });
         }
       });
     }
   })
-  .post(function (req, res, next) {
+  /**
+   * project编辑提交
+   */
+  .post((req, res, next) => {
     if (req.body.projectId) {
-      Project.findById(req.body.projectId, function (err, project) {
-        if (err) {
-          console.log(err);
-        } else {
+      Project.findById(req.body.projectId, (err, project) => {
+        if (err) return next(err);
+        if (project) {
           console.log('project is: ', project);
           project.projectName = req.body.projectName;
           project.tasks = req.body.tasks;
           project.modifiedOn = Date.now();
-          project.save(function (err, projectSaved) {
-            if (!err) {
-              console.log('project saved success');
-              res.redirect('/mongoose-pm/project/' + projectSaved._id);
-            }
-          })
+          project.save((error, projectSaved) => {
+            if (error) next(error);
+            console.log('project saved success');
+            res.redirect('/mongoose-pm/project/' + projectSaved._id);
+          });
+        } else {
+          res.json({ status: 'error', error: '没有找到project' });
         }
       });
     }
-  })
+  });
 
 router.route('/delete/:id')
   .get(function (req, res, next) {
@@ -115,19 +128,14 @@ router.route('/delete/:id')
   })
   .post(function (req, res, next) {
 
-  })
+  });
 
 router.get('/byuser/:userid', function (req, res, next) {
-  var userid = req.params.userid;
+  const userid: string = req.params.userid;
   if (userid) {
-    Project.findByUserId(userid, function (err, projects) {
-      if (!err) {
-        console.log(projects);
-        res.json(projects);
-      } else {
-        console.log(err);
-        res.json({ status: 'error', error: 'Error finding projects' });
-      }
+    (Project as any).findByUserId(userid, (err: any, projects: IProject[]) => {
+      if (err) res.json({ status: 'error', error: 'Error finding projects' });
+      res.json(projects);
     });
   } else {
     console.log('No user id supplied');
@@ -136,4 +144,4 @@ router.get('/byuser/:userid', function (req, res, next) {
 });
 
 
-module.exports = router;
+export default router;

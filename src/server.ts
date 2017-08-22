@@ -3,6 +3,9 @@ import {Express, Request, Response} from "express-serve-static-core";
 import * as http from 'http';
 import { Port } from './helpers/normalizePort';
 import setupEnv from './env';
+require('./db');
+
+import mongoosePM from './routes/mongoose-pm';
 
 const app: Express = express();
 setupEnv(app, express);
@@ -18,6 +21,7 @@ server.on('listening', onListening);
 app.get('/', (req: Request, res: Response) => {
   res.render('index');
 });
+app.use('/mongoose-pm', mongoosePM);
 // -- routes end --
 
 function onError(error: any) {

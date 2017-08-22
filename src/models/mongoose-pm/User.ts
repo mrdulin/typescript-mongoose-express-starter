@@ -1,9 +1,14 @@
-/**
- * Created by Administrator on 2016/4/11.
- */
-var mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
 
-var userSchema = new mongoose.Schema({
+interface IUser extends mongoose.Document {
+  name: string;
+  email: string;
+  createdOn: number;
+  modifiedOn: number;
+  lastLogin: number;
+}
+
+const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -16,14 +21,14 @@ var userSchema = new mongoose.Schema({
   },
   createdOn: {
     type: Date,
-    'default': Date.now()
+    default: Date.now()
   },
   modifiedOn: Date,
   lastLogin: Date
 });
 
-userSchema.statics = {
-  findById: findById
+UserSchema.statics = {
+  findById
 };
 
 function findById(id, cb) {
@@ -34,4 +39,4 @@ function nameLengthValidator(name) {
   return name && name.length > 4;
 }
 
-module.exports = mongoose.model('PM-User', userSchema);;
+export const User = mongoose.model<IUser>('PM-User', UserSchema);
