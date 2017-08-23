@@ -2,13 +2,13 @@ import * as express from 'express';
 import { Express, Request, Response, NextFunction } from "express-serve-static-core";
 import * as http from 'http';
 import { Port } from './helpers/normalizePort';
+import './db';
 import setupEnv from './env';
-require('./db');
 
 import mongoosePM from './routes/mongoose-pm';
 
 const app: Express = express();
-setupEnv(app, express);
+setupEnv(app);
 
 const port: Port = app.get('port');
 const server: http.Server = http.createServer(app);

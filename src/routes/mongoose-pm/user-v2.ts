@@ -1,14 +1,43 @@
-import * as express from "express";
-import { Request, Response, Router } from 'express';
+import { Request, Response, Router, NextFunction } from 'express';
 import { User, IUser } from '../../models/mongoose-pm/User';
 import { Project } from '../../models/mongoose-pm/Project';
-const router: Router = express.Router();
 
-router
+export class UserController {
+  constructor() {}
+
+  public initialize(router: Router) {
+    router.get('/', this.renderHomePage);
+
+    router.route('/new')
+      .get(this.renderRegisterPage)
+      .post(this.register);
+
+    router.route('/edit')
+      .get(this.renderEditPage)
+      .post(this.edit);
+
+    router.route('/delete')
+      .get(this.renderDeletePage)
+      .post(this.delete);
+
+    router.route('/login')
+      .get(this.renderLoginPage)
+      .post(this.login);
+
+    router.get('/logout', this.logout);
+
+    return router;
+  }
+
   /**
    * 用户登录后首页
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @returns {void}
+   * @memberof UserController
    */
-  .get('/', (req: Request, res: Response) => {
+  public renderHomePage(req: Request, res: Response): void {
     const { user } = req.session!;
 
     if (user) {
@@ -21,25 +50,33 @@ router
     }
 
     req.session!.destroy(() => res.redirect('/mongoose-pm/user/login'));
-  });
+  }
 
-router
-  .route('/new')
   /**
    * 用户注册页
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @memberof UserController
    */
-  .get((req: Request, res: Response) => {
+  public renderRegisterPage(req: Request, res: Response) {
     res.render('mongoose-pm/user-edit', {
       title: '注册用户',
       name: '',
       email: '',
       buttonText: "注册"
     });
-  })
+  }
+
   /**
-   * 用户注册页提交
+   * 用户提交注册表单
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @memberof UserController
    */
-  .post((req, res, next) => {
+  public register(req: Request, res: Response, next: NextFunction) {
     const { username: name, email, password } = req.body;
     const now: number = Date.now();
 
@@ -63,14 +100,18 @@ router
           });
         }
       });
-  });
+  }
 
-router
-  .route('/edit')
   /**
    * 用户信息编辑页
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @returns
+   * @memberof UserController
    */
-  .get((req, res, next) => {
+  public renderEditPage(req: Request, res: Response, next: NextFunction) {
     const { user } = req.session!;
 
     if (user) {
@@ -82,13 +123,20 @@ router
         buttonText: '保存'
       });
     }
-    res.redirect('../user/login');
-  })
+
+    req.session!.destroy(() => res.redirect('../user/login'));
+
+  }
 
   /**
-   * 用户信息编辑页保存
+   * 用户提交编辑表单
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @memberof UserController
    */
-  .post((req, res, next) => {
+  public edit(req: Request, res: Response, next: NextFunction) {
     const user = req.session!.user;
 
     if (user._id) {
@@ -116,14 +164,18 @@ router
         }
       });
     }
-  });
+  }
 
-router
-  .route('/delete')
   /**
-   * 账号删除页面
+   * 用户账号删除页
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @returns
+   * @memberof UserController
    */
-  .get((req, res, next) => {
+  public renderDeletePage(req: Request, res: Response, next: NextFunction) {
     const user = req.session!.user;
 
     if (user) {
@@ -136,45 +188,61 @@ router
     }
 
     req.session!.destroy(() => res.redirect('../user/login'));
-
-  })
+  }
 
   /**
-   * 账号删除提交
+   * 用户账户删除提交
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @memberof UserController
    */
-  .post((req, res, next) => {
-    if (req.body._id) {
-      User.findByIdAndRemove({ _id: req.body._id }, (err, user) => {
+  public delete(req: Request, res: Response, next: NextFunction) {
+    const _id: string = req.body._id;
+
+    if (_id) {
+      User.findByIdAndRemove({ _id }, (err, user) => {
         if (err) {
           console.log(err);
-          res.redirect('../user?error=deleting');
-        } else {
-          if (user) {
-            console.log('User deleted: ', user);
-            Project.remove({ createdBy: user._id }, (error) => {
-              if (error) return next(error);
-              res.clearCookie('user');
-              res.clearCookie('logined');
-              res.redirect('../user/login');
-            });
-          }
+          return res.redirect('../user?error=deleting');
         }
+
+        if (user) {
+          console.log('User deleted: ', user);
+          Project.remove({ createdBy: user }, (error) => {
+            if (error) return next(error);
+            req.session!.destroy(() => res.redirect('../user/login'));
+          });
+        } else {
+          req.session!.destroy(() => res.redirect('../user/login'));
+        }
+
       });
     }
-  });
+  }
 
-router
-  .route('/login')
   /**
-   * 用户登录页
+   * 登录页
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @memberof UserController
    */
-  .get((req, res, next) => {
+  public renderLoginPage(req: Request, res: Response, next: NextFunction) {
     res.render('mongoose-pm/login', { title: '登录' });
-  })
+  }
+
   /**
-   * 用户登录提交
+   * 登陆页提交
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @memberof UserController
    */
-  .post((req: any, res, next) => {
+  public login(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;
 
     if (email) {
@@ -183,7 +251,7 @@ router
 
         if (user && user.password === password) {
           console.log('logined user is: ', user);
-          req.session.user = user;
+          req.session!.user = user;
           res.redirect('../user');
         } else {
           res.redirect('?404=error');
@@ -193,17 +261,20 @@ router
     } else {
       res.redirect('?404=error');
     }
-  });
+  }
 
-router
   /**
    * 退出登录
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {NextFunction} next
+   * @memberof UserController
    */
-  .get('/logout', (req: Request, res) => {
+  public logout(req: Request, res: Response, next: NextFunction) {
     req.session!.destroy(() => {
       res.redirect('login');
     });
-  });
+  }
 
-
-export default router;
+}

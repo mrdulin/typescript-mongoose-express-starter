@@ -1,6 +1,7 @@
 import mongoose = require('mongoose');
+import config from './config';
 
-const dbURI: string = 'mongodb://localhost:27017/typescript-mongoose-express-starter';
+const dbURI: string = config.dbURI;
 
 mongoose.Promise = global.Promise;
 
@@ -26,5 +27,3 @@ process.on('SIGINT', function () {
     process.exit(0);
   });
 });
-
-export default mongoose;
