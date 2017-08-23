@@ -31,19 +31,26 @@ app.get('*', (req, res, next) => {
   next(err);
 });
 
-// 404错误处理中间件
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err.status !== 404) {
-    return next();
+// 错误处理函数,错误处理中心化
+app.use(function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
+  res.status(err.status || 500);
+  if (app.get('env') !== 'production') {
+    console.log(err.message + '/n' + err.status + '/n' + err.stack);
   }
-  res.status(404).send(err.message);
+  res.render('error', {
+    message: err.message,
+    error: err
+  });
 });
 
-//
-process.on('uncaughtException', function (err) {
-  console.error(err);
+// 未捕获的异常处理
+process.on('uncaughtException', function (err: any) {
+  if (app.get('env') !== 'production') {
+    console.log(err.message + '/n' + err.status + '/n' + err.stack);
+  }
 });
 
+// 服务器启动错误
 function onError(error: any) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -53,14 +60,14 @@ function onError(error: any) {
     ? 'Pipe ' + port
     : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      //https://stackoverflow.com/questions/9164915/node-js-eacces-error-when-listening-on-most-ports
+      console.error(bind + '端口使用需要更高的用户权限');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      console.error(bind + '端口被占用');
       process.exit(1);
       break;
     default:

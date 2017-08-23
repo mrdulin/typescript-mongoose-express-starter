@@ -1,14 +1,20 @@
-//
-   Created by Administrator on 2016/4/11.
 extends layout
 
 block content
-    h1= title
-    //- form的action留空，提交的时候，该表单会提交到当前表单所在的url地址
-    form(id="formUserProfile", method="post", action="")
-        label(for="username") 用户名
-        input(id="username" type="text" name="username" value="#{name}")
-        label(for="email") 邮箱
-        input(id="email" name="email" type="email" value="#{email}")
-        input(type="submit" value="#{buttonText}")
+  h1= title
+  //- form的action留空，提交的时候，该表单会提交到当前表单所在的url地址
+  form(id="formUserProfile", method="post", action="")
+    div
+      label(for="username") 用户名：
+      input(id="username" type="text" name="username" value="#{name}")
+    div
+      label(for="email") 邮箱：
+      input(id="email" name="email" type="email" value="#{email}")
+
+    if !email
+      div
+        label(for="password") 密码：
+        input(type="password" name='password')
+
+    input(type="submit" value="#{buttonText}")
 

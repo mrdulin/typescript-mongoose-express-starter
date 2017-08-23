@@ -4,6 +4,9 @@ import * as morgan from 'morgan';
 import normalizePort, { Port } from './helpers/normalizePort';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
+import * as session from 'express-session';
+
+import credential from './credential';
 
 const DEFAULT_PORT: string = '2222';
 
@@ -15,7 +18,20 @@ const setupEnvironment = (app: Application, express: any) => {
 
   app.use('/lib', express.static(libDir));
   app.use('/public', express.static(publicDir));
-  app.use(cookieParser());
+  app.use(cookieParser(credential.cookieSecret));
+  app.use(session({
+    secret: credential.cookieSecret,
+    cookie: {
+      maxAge: 60 * 1000,
+      domain: 'localhost',
+      httpOnly: true,
+      path: '/'
+    },
+    name: 'tmes.sid',
+    resave: false,
+    saveUninitialized: false,
+    store: new session.MemoryStore()
+  }));
   app.use(bodyParser.urlencoded({
     extended: true
   }));
