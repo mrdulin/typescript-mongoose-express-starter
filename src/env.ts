@@ -8,6 +8,7 @@ import * as bodyParser from 'body-parser';
 import * as session from 'express-session';
 import * as connectMongo from 'connect-mongo';
 import config from './config';
+import mongoose from './db';
 
 const DEFAULT_PORT: string = '2222';
 
@@ -20,8 +21,9 @@ const setupEnvironment = (app: Application) => {
 
   const MongoStore: connectMongo.MongoStoreFactory = connectMongo(session);
   const mongoStore: connectMongo.MongoStore = new MongoStore({
-    url: config.dbURI,
-    autoReconnect: true
+    // url: config.dbURI,
+    // autoReconnect: true
+    mongooseConnection: mongoose.connection
   });
 
   app.use('/lib', express.static(libDir));

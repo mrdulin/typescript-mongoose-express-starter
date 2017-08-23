@@ -27,3 +27,5 @@ process.on('SIGINT', function () {
     process.exit(0);
   });
 });
+
+export default mongoose;

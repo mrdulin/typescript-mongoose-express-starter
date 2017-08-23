@@ -2,7 +2,6 @@ import * as express from 'express';
 import { Express, Request, Response, NextFunction } from "express-serve-static-core";
 import * as http from 'http';
 import { Port } from './helpers/normalizePort';
-import './db';
 import setupEnv from './env';
 
 import mongoosePM from './routes/mongoose-pm';
