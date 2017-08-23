@@ -3,7 +3,7 @@ import { User, IUser } from '../../models/mongoose-pm/User';
 import { Project } from '../../models/mongoose-pm/Project';
 
 export class UserController {
-  constructor() {}
+  constructor() { }
 
   public initialize(router: Router) {
     router.get('/', this.renderHomePage);
@@ -40,6 +40,7 @@ export class UserController {
   public renderHomePage(req: Request, res: Response): void {
     const { user } = req.session!;
 
+    console.log('user', user);
     if (user) {
       return res.render('mongoose-pm/user-page', {
         title: user.name,
@@ -80,6 +81,37 @@ export class UserController {
     const { username: name, email, password } = req.body;
     const now: number = Date.now();
 
+    req.checkBody({
+      username: {
+        notEmpty: true,
+        isLength: {
+          options: [{ min: 4, max: 20 }],
+          errorMessage: '用户名必须大于4个字符，小于20个字符'
+        },
+        errorMessage: '无效的用户名'
+      },
+      password: {
+        notEmpty: true,
+        isLength: {
+          options: [{ min: 3, max: 20 }],
+          errorMessage: '密码必须大于3个字符，小于20个字符'
+        },
+        errorMessage: '无效的密码'
+      },
+      email: {
+        notEmpty: true,
+        isEmail: {
+          errorMessage: '无效的邮箱'
+        }
+      }
+    });
+
+    req.sanitize('username').escape().trim();
+
+    req.getValidationResult().then((result) => {
+      console.log('validation result: ', result);
+    });
+
     new User({ name, email, password, modifiedOn: now, lastLogin: now })
       .save((err, user) => {
         if (err) {
@@ -93,8 +125,7 @@ export class UserController {
           }
         } else {
           console.log('user is: ' + user);
-          // res.cookie('user', user);
-          // res.cookie('logined', true);
+          req.session!.user = user;
           User.update({ _id: user.id }, { $set: { lastLogin: Date.now() } }, () => {
             res.redirect('../user');
           });

@@ -1,12 +1,15 @@
 import * as express from 'express';
 import { Application } from "express-serve-static-core";
+import * as fs from 'fs';
 import * as path from 'path';
 import * as morgan from 'morgan';
-import normalizePort, { Port } from './helpers/normalizePort';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as session from 'express-session';
 import * as connectMongo from 'connect-mongo';
+import expressValidator = require('express-validator');
+
+import normalizePort, { Port } from './helpers/normalizePort';
 import config from './config';
 import mongoose from './db';
 
@@ -22,7 +25,7 @@ const setupEnvironment = (app: Application) => {
   const MongoStore: connectMongo.MongoStoreFactory = connectMongo(session);
   const mongoStore: connectMongo.MongoStore = new MongoStore({
     // url: config.dbURI,
-    // autoReconnect: true
+    autoReconnect: true,
     mongooseConnection: mongoose.connection
   });
 
@@ -32,8 +35,8 @@ const setupEnvironment = (app: Application) => {
   app.use(session({
     secret: config.cookieSecret,
     cookie: {
-      maxAge: 20 * 1000,
-      domain: 'localhost',
+      maxAge: 60 * 1000,
+      domain: '10.0.78.157',
       httpOnly: true,
       path: '/'
     },
@@ -45,7 +48,16 @@ const setupEnvironment = (app: Application) => {
   }));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
-  app.use(morgan('dev'));
+
+  //需要加在bodyParser中间件后面, express-validator使用body-parser访问参数
+  app.use(expressValidator());
+
+  if (process.env.NODE_ENV === 'production') {
+    const accessLogStream: fs.WriteStream = fs.createWriteStream(path.join(cwd, 'access.log'), { flags: 'a' });
+    app.use(morgan('combined', { stream: accessLogStream }));
+  } else {
+    app.use(morgan('dev'));
+  }
 
   app.set('port', port);
   app.set('views', viewsDir);
