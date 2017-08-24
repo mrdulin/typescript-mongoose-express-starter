@@ -8,16 +8,13 @@
       "type": "node",
       "request": "launch",
       "name": "server",
-      "program": "${workspaceRoot}/build/server.js"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "program": "${file}",
+      "cwd": "${workspaceRoot}",
+      "program": "${workspaceRoot}/src/server.ts",
+      "sourceMaps": true,
       "outFiles": [
-        "${workspaceRoot}/out/**/*.js"
-      ]
+        "${workspaceRoot}/build/server.js"
+      ],
+      "console": "externalTerminal"
     }
   ]
 }

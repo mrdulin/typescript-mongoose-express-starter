@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Router, Request, Response, NextFunction } from 'express';
 import { User } from '../models/User';
-import { Result } from 'express-validator';
+import { Result, MappedError } from 'express-validator';
 // import { loginCheck } from '../middlewares';
 
 const router: Router = express.Router();
@@ -13,8 +13,6 @@ router
 
 router
   .post('/', (req: Request, res: Response, next: NextFunction) => {
-    const { username: name, email, password } = req.body;
-    const now: number = Date.now();
 
     req.checkBody({
       username: {
@@ -32,38 +30,46 @@ router
           errorMessage: '密码必须大于3个字符，小于20个字符'
         },
         errorMessage: '无效的密码'
-      },
-      email: {
-        notEmpty: true,
-        isEmail: {
-          errorMessage: '无效的邮箱'
-        }
       }
     });
 
-    req.sanitize('username').escape().trim();
+    if (req.body.password !== req.body.repassword) {
+      req.flash('error', '两次输入的密码不一致');
+      return res.redirect('back');
+    }
+
+    req.sanitize('username').trim();
+    req.sanitize('password').trim();
 
     req.getValidationResult().then((result: Result) => {
-      console.log('validation result: ', result);
-    });
 
-    new User({ name, email, password, modifiedOn: now, lastLogin: now })
-      .save((err, user) => {
-        if (err) {
-          if (err.code === 11000) {
-            req.flash('error', '用户名已被占用');
-            res.redirect('/signup');
-          }
-          next(err);
-        } else {
-          delete user.password;
-          req.session!.user = user;
+      if (result.isEmpty()) {
+        const now: number = Date.now();
+        const { username, password } = req.body;
 
-          User.update({ _id: user.id }, { $set: { lastLogin: Date.now() } }, () => {
-            res.redirect('/posts');
+        new User({ username, password, modifiedOn: now, lastLogin: now })
+          .save((err, user) => {
+            if (err) {
+              if (err.code === 11000) {
+                req.flash('error', '用户名已被占用');
+                res.redirect('/signup');
+              }
+              next(err);
+            } else {
+              //TODO: 从user中删除password字段
+              req.session!.user = user;
+
+              User.update({ _id: user.id }, { $set: { lastLogin: Date.now() } }, () => {
+                res.redirect('/posts');
+              });
+            }
           });
-        }
-      });
+      } else {
+        const error: MappedError[] = result.array();
+        req.flash('error', error[0].msg);
+        res.redirect('back');
+      }
+    });
   });
 
 export default router;

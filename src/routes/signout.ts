@@ -7,7 +7,7 @@ const router: Router = express.Router();
 router
   .get('/', (req: Request, res: Response) => {
     req.session!.destroy(() => {
-      res.redirect('login');
+      res.redirect('/signin');
     });
   });
 

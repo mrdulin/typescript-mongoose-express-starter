@@ -1,7 +1,7 @@
 import { Request, Response, Router, NextFunction } from 'express';
-import { User, IUser } from '../models/User';
+import { User } from '../models/User';
 // import { loginCheck } from '../middlewares';
-import { Result, MappedError } from 'express-validator';
+import { Result } from 'express-validator';
 
 export class UserController {
   constructor() { }
@@ -151,7 +151,7 @@ export class UserController {
         if (userFound) {
           const { username, email } = req.body;
 
-          userFound.name = username;
+          userFound.username = username;
           userFound.email = email;
           userFound.modifiedOn = Date.now();
 

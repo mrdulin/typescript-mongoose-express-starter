@@ -12,7 +12,8 @@ const config: webpack.Configuration = {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'server.js',
-    pathinfo: true
+    pathinfo: true,
+    devtoolModuleFilenameTemplate: '[absolute-resource-path]'
   },
   module: {
     rules: [

@@ -1,6 +1,10 @@
 import * as mongoose from 'mongoose';
+import { Document } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
-export interface IUser extends mongoose.Document {
+const SALT_WORD_FACTOR: number = 10;
+
+export interface IUser extends Document, IMethods {
   username: string;
   password: string;
   email: string;
@@ -9,7 +13,13 @@ export interface IUser extends mongoose.Document {
   lastLogin: number;
 }
 
-const UserSchema = new mongoose.Schema({
+interface IMethods {
+  comparePassword: (password: string, cb: ComparePasswordCallback) => void;
+}
+
+type ComparePasswordCallback = (err: Error, same?: boolean) => void;
+
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -28,8 +38,7 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    trim: true,
-    required: true
+    trim: true
   },
   createdOn: {
     type: Date,
@@ -39,4 +48,25 @@ const UserSchema = new mongoose.Schema({
   lastLogin: Date
 });
 
-export const User = mongoose.model<IUser>('User', UserSchema);
+userSchema.pre('save', function (next) {
+  const user: IUser = this;
+  if (!user.isModified('password')) return next();
+
+  bcrypt.genSalt(SALT_WORD_FACTOR)
+    .then((salt: string) => {
+      return bcrypt.hash(user.password, salt).then((encrypted: string) => {
+        user.password = encrypted;
+        next();
+      });
+    })
+    .catch(next);
+});
+
+userSchema.methods.comparePassword = function (password: string, cb: ComparePasswordCallback) {
+  const user: IUser = this;
+  bcrypt.compare(password, user.password)
+    .then((same: boolean) => cb(null, same))
+    .catch(cb);
+};
+
+export const User = mongoose.model<IUser>('User', userSchema);

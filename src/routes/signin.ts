@@ -11,6 +11,9 @@ router
     res.render('signin');
   });
 
+/**
+ * 登录表单提交，使用express-validator中间件进行参数校验，消毒
+ */
 router
   .post('/', (req: Request, res: Response, next: NextFunction) => {
     req.checkBody({
@@ -43,14 +46,22 @@ router
               return res.redirect('back');
             }
 
-            if (user.password !== password) {
-              req.flash('error', '密码错误');
-              return res.redirect('back');
-            }
+            // if (user.password !== password) {
+            //   req.flash('error', '密码错误');
+            //   return res.redirect('back');
+            // }
 
-            delete user.password;
-            req.session!.user = user;
-            res.redirect('/posts');
+            user.comparePassword(password, (err: Error, same?: boolean) => {
+              if (err) return next(err);
+              if (!same) {
+                req.flash('error', '密码错误');
+                return res.redirect('back');
+              } else {
+                req.session!.user = user;
+                res.redirect('/posts');
+              }
+            });
+
           })
           .catch(next);
 
@@ -61,5 +72,6 @@ router
       }
     });
   });
+
 
 export default router;
