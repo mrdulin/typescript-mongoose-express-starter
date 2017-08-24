@@ -1,10 +1,9 @@
 import * as express from 'express';
-import { Express, Request, Response, NextFunction } from "express-serve-static-core";
+import { Express, Request, Response, NextFunction } from "express";
 import * as http from 'http';
 import { Port } from './helpers/normalizePort';
 import setupEnv from './env';
-
-import mongoosePM from './routes/mongoose-pm';
+import { routes } from './routes';
 
 const app: Express = express();
 setupEnv(app);
@@ -16,11 +15,15 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-// -- routes start --
-app.get('/', (req: Request, res: Response) => {
-  res.render('index');
+app.use((req: any, res, next) => {
+  res.locals.user = req.session.user;
+  res.locals.success = req.flash('success').toString();
+  res.locals.error = req.flash('error').toString();
+  next();
 });
-app.use('/mongoose-pm', mongoosePM(app));
+
+// -- routes start --
+routes(app);
 // -- routes end --
 
 // 404路由

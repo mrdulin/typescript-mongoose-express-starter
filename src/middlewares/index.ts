@@ -1,1 +1,1 @@
-export * from './not-logged-in';
+export * from './loginCheck';

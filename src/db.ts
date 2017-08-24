@@ -1,7 +1,7 @@
 import mongoose = require('mongoose');
 import config from './config';
 
-const dbURI: string = config.dbURI;
+const dbURI: string = config.DB_URI;
 
 mongoose.Promise = global.Promise;
 

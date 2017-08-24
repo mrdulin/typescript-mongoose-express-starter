@@ -1,17 +1,18 @@
 import * as mongoose from 'mongoose';
 
 export interface IUser extends mongoose.Document {
-  name: string;
-  email: string;
+  username: string;
   password: string;
+  email: string;
   createdOn: number;
   modifiedOn: number;
   lastLogin: number;
 }
 
 const UserSchema = new mongoose.Schema({
-  name: {
+  username: {
     type: String,
+    unique: true,
     required: true,
     trim: true,
     validate: {
@@ -28,7 +29,6 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     trim: true,
-    unique: true,
     required: true
   },
   createdOn: {
@@ -39,13 +39,4 @@ const UserSchema = new mongoose.Schema({
   lastLogin: Date
 });
 
-UserSchema.statics = {
-  findById
-};
-
-export const User = mongoose.model<IUser>('PM-User', UserSchema);
-
-function findById(id: number, cb: () => void) {
-  return User.findOne({ _id: id }, cb);
-}
-
+export const User = mongoose.model<IUser>('User', UserSchema);
