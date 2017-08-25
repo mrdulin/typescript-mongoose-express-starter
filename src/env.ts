@@ -10,6 +10,7 @@ import * as connectMongo from 'connect-mongo';
 import flash = require('connect-flash');
 import expressValidator = require('express-validator');
 import * as Ejs from 'ejs';
+import * as moment from 'moment';
 
 import normalizePort, { Port } from './helpers/normalizePort';
 import config from './config';
@@ -29,10 +30,13 @@ const setupEnvironment = (app: Application) => {
   });
 
   //设置模板全局变量
-  app.locals.blog = {
-    title: config.TITLE,
-    description: config.DESCRIPTION
-  };
+  Object.assign(app.locals, {
+    blog: {
+      title: config.TITLE,
+      description: config.DESCRIPTION
+    },
+    moment
+  });
 
   app.use('/lib', express.static(libDir));
   app.use('/public', express.static(publicDir));

@@ -15,6 +15,7 @@
         "${workspaceRoot}/build/server.js"
       ],
       "console": "externalTerminal"
+
     }
   ]
 }

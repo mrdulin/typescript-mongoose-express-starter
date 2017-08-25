@@ -46,11 +46,6 @@ router
               return res.redirect('back');
             }
 
-            // if (user.password !== password) {
-            //   req.flash('error', '密码错误');
-            //   return res.redirect('back');
-            // }
-
             user.comparePassword(password, (err: Error, same?: boolean) => {
               if (err) return next(err);
               if (!same) {

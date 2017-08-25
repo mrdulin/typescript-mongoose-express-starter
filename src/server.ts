@@ -38,11 +38,13 @@ app.use(function errorHandler(err: any, req: Request, res: Response, next: NextF
   res.status(err.status || 500);
   if (app.get('env') !== 'production') {
     console.log(err.message + '/n' + err.status + '/n' + err.stack);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
   }
-  res.render('error', {
-    message: err.message,
-    error: err
-  });
+
+  res.end('服务器出错喽~');
 });
 
 // 未捕获的异常处理

@@ -3,7 +3,7 @@ const config = {
   DB_URI: 'mongodb://localhost:27017/typescript-mongoose-express-starter',
   DEFAULT_PORT: '2222',
   DOMAIN: 'localhost',
-  MAX_AGE: 60 * 1000,
+  MAX_AGE: 60 * 60 * 1000,
 
   TITLE: 'SIMPLE-BLOG',
   DESCRIPTION: 'A SIMPLE BLOG BUILD WITH EXPRESS, MONGODB, TYPESCRIPT, MONGOOSE'

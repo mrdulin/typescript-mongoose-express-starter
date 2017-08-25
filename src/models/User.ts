@@ -1,16 +1,20 @@
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { IPost } from './Post';
 
+const { Schema } = mongoose;
 const SALT_WORD_FACTOR: number = 10;
 
 export interface IUser extends Document, IMethods {
+  _id: string;
   username: string;
   password: string;
   email: string;
   createdOn: number;
   modifiedOn: number;
   lastLogin: number;
+  posts: IPost;
 }
 
 interface IMethods {
@@ -19,7 +23,7 @@ interface IMethods {
 
 type ComparePasswordCallback = (err: Error, same?: boolean) => void;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     unique: true,
@@ -30,6 +34,7 @@ const userSchema = new mongoose.Schema({
       msg: '用户名必须大于4个字符'
     }
   },
+  gender: String,
   password: {
     type: String,
     trim: true,
@@ -40,12 +45,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  bio: {
+    type: String,
+    trim: true
+  },
   createdOn: {
     type: Date,
     default: Date.now()
   },
   modifiedOn: Date,
-  lastLogin: Date
+  lastLogin: Date,
+
+  posts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Post'
+  }]
 });
 
 userSchema.pre('save', function (next) {

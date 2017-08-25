@@ -1,3 +1,7 @@
 <%- include('header') %>
-this is post list
+
+<% posts.forEach(function (post) { %>
+  <% include includes/post-content %>
+<% }) %>
+
 <%- include('footer') %>

@@ -47,6 +47,7 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "express-validator": "^3.2.1",
+    "moment": "^2.18.1",
     "mongoose": "^4.11.7",
     "morgan": "^1.8.2"
   }
