@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as marked from 'marked';
 import { Document } from 'mongoose';
 import { IUser } from './User';
-import { IComment } from './Comment';
+import { Comment, IComment } from './Comment';
 const { Schema } = mongoose;
 
 export interface IPost extends Document {
@@ -43,8 +43,21 @@ const postSchema = new Schema({
   }
 });
 
-postSchema.methods.convertMarkdownToHtml = function (): string {
-  return marked(this.content);
+postSchema.methods = {
+  convertMarkdownToHtml(): string {
+    return marked(this.content);
+  }
+};
+
+postSchema.statics = {
+  setCommentsCount(posts: IPost[]) {
+    return Promise.all(posts.map((post: IPost) => {
+      return Comment.schema.statics.getCountByPostId(post._id).then((count: number) => {
+        post.commentsCount = count;
+        return post;
+      });
+    }));
+  }
 };
 
 export const Post = mongoose.model<IPost>('Post', postSchema);

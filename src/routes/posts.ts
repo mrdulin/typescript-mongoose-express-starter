@@ -3,10 +3,11 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Post, IPost } from '../models/Post';
 import { Comment, IComment } from '../models/Comment';
 import { Result, MappedError } from 'express-validator';
-import { Types } from 'mongoose';
 import { notLogin } from '../middlewares/loginCheck';
+import { Types } from 'mongoose';
 
 const router: Router = express.Router();
+const ObjectId = Types.ObjectId;
 
 function postValidator(req: Request, res: Response, next: NextFunction) {
   req.checkBody({
@@ -39,14 +40,16 @@ router
     const author: string = req.query.author;
     const conditions: any = {};
     if (author) {
-      conditions.author = new Types.ObjectId(author);
+      conditions.author = new ObjectId(author);
     }
 
     Post
       .find(conditions)
       .exec()
       .then((posts: IPost[]) => {
-        res.render('posts', { posts });
+        Post.schema.statics.setCommentsCount(posts).then(() => {
+          res.render('posts', { posts });
+        });
       })
       .catch(next);
 
@@ -89,12 +92,25 @@ router
 
     const queryPromises: Array<Promise<any>> = [
       // Post.findById(postId).populate('author', '_id username gender bio').exec(),
-      Post.findOneAndUpdate({ _id: new Types.ObjectId(postId) }, { $inc: { pv: 1 } }, { new: true })
+      Post.findOneAndUpdate({ _id: new ObjectId(postId) }, { $inc: { pv: 1 } }, { new: true })
         .populate('author', '_id username gender bio').exec(),
-      Comment.find({ post: new Types.ObjectId(postId) }).populate('author').exec()
+      Comment.find({ post: new ObjectId(postId) }).populate('author').exec()
     ];
 
-    Promise.all(queryPromises.map((query: Promise<any>): Promise<any> => query.catch((err: any) => err)))
+    Promise.all(
+      queryPromises.map((query: Promise<any>, index: number): Promise<any> => {
+        return query.catch((err: any) => {
+          switch (index) {
+            case 0:
+              return undefined;
+            case 1:
+              return [];
+            default:
+              return next(err);
+          }
+        });
+      })
+    )
       .then((result: any[]) => {
         const post: IPost = result[0];
         //TODO: 如果comment数据查询出错，错误处理
@@ -105,7 +121,8 @@ router
           return res.redirect('back');
         }
 
-        console.log('result', post);
+        post.commentsCount = comments.length;
+        // console.log('result', post);
 
         res.render('post', { post, comments });
 
@@ -123,8 +140,8 @@ router
 
     Post
       .findOne({
-        _id: new Types.ObjectId(postId),
-        author: new Types.ObjectId(author)
+        _id: new ObjectId(postId),
+        author: new ObjectId(author)
       })
       .populate('author', '_id')
       .exec()
@@ -153,8 +170,8 @@ router
     const postId: string = req.params.postId;
 
     Post.findOneAndUpdate({
-      author: new Types.ObjectId(author),
-      _id: new Types.ObjectId(postId)
+      author: new ObjectId(author),
+      _id: new ObjectId(postId)
     }, { title, content })
       .exec()
       .then((post: IPost) => {
@@ -171,8 +188,8 @@ router
     const postId: string = req.params.postId;
 
     Post.findOneAndRemove({
-      author: new Types.ObjectId(author),
-      _id: new Types.ObjectId(postId)
+      author: new ObjectId(author),
+      _id: new ObjectId(postId)
     })
       .exec()
       .then(() => {
@@ -223,8 +240,8 @@ router
 
     Comment
       .findOneAndRemove({
-        _id: new Types.ObjectId(commentId),
-        author: new Types.ObjectId(author)
+        _id: new ObjectId(commentId),
+        author: new ObjectId(author)
       })
       .exec()
       .then(() => {
