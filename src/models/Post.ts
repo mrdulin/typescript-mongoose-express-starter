@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as marked from 'marked';
 import { Document } from 'mongoose';
 import { IUser } from './User';
 import { IComment } from './Comment';
@@ -41,6 +42,10 @@ const postSchema = new Schema({
     default: 0
   }
 });
+
+postSchema.methods.convertMarkdownToHtml = function (): string {
+  return marked(this.content);
+};
 
 export const Post = mongoose.model<IPost>('Post', postSchema);
 

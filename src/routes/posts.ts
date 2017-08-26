@@ -8,6 +8,32 @@ import { notLogin } from '../middlewares/loginCheck';
 
 const router: Router = express.Router();
 
+function postValidator(req: Request, res: Response, next: NextFunction) {
+  req.checkBody({
+    title: {
+      notEmpty: true,
+      errorMessage: '标题不能为空'
+    },
+    content: {
+      notEmpty: true,
+      errorMessage: '文章内容不能为空'
+    }
+  });
+
+  req.sanitize('title').escape().trim();
+  req.sanitize('content').escape().trim();
+
+  req.getValidationResult().then((result: Result) => {
+    if (result.isEmpty()) {
+      next();
+    } else {
+      const error: MappedError[] = result.array();
+      req.flash('error', error[0].msg);
+      res.redirect('back');
+    }
+  });
+}
+
 router
   .get('/', (req: Request, res: Response, next: NextFunction) => {
     const author: string = req.query.author;
@@ -38,45 +64,20 @@ router
  * 发表文章 - 提交
  */
 router
-  .post('/', (req: Request, res: Response, next: NextFunction) => {
-
-    req.checkBody({
-      title: {
-        notEmpty: true,
-        errorMessage: '标题不能为空'
-      },
-      content: {
-        notEmpty: true,
-        errorMessage: '文章内容不能为空'
-      }
-    });
-
-    req.sanitize('title').escape().trim();
-    req.sanitize('content').escape().trim();
-
+  .post('/', postValidator, (req: Request, res: Response, next: NextFunction) => {
     // TODO:
     // if not use express-validator middleware, how to use mongoose schema build-in validator to validate the form data.
     // And, distinguish each type of error, catch the error in router(controller), so I can use my custom error message in the view.
+    const { title, content } = req.body;
+    const author: string = req.session.user._id;
+    const post: IPost = new Post({ title, content, author });
 
-    req.getValidationResult().then((result: Result) => {
-      if (result.isEmpty()) {
-        const { title, content } = req.body;
-        const author: string = req.session.user._id;
-        const post: IPost = new Post({ title, content, author });
-
-        post.save()
-          .then((postSaved: IPost) => {
-            req.flash('success', '发表成功');
-            res.redirect(`/posts/${postSaved._id}`);
-          })
-          .catch(next);
-
-      } else {
-        const error: MappedError[] = result.array();
-        req.flash('error', error[0].msg);
-        res.redirect('back');
-      }
-    });
+    post.save()
+      .then((postSaved: IPost) => {
+        req.flash('success', '发表成功');
+        res.redirect(`/posts/${postSaved._id}`);
+      })
+      .catch(next);
   });
 
 /**
@@ -87,7 +88,9 @@ router
     const postId: string = req.params.postId;
 
     const queryPromises: Array<Promise<any>> = [
-      Post.findById(postId).populate('author', '_id username gender bio').exec(),
+      // Post.findById(postId).populate('author', '_id username gender bio').exec(),
+      Post.findOneAndUpdate({ _id: new Types.ObjectId(postId) }, { $inc: { pv: 1 } }, { new: true })
+        .populate('author', '_id username gender bio').exec(),
       Comment.find({ post: new Types.ObjectId(postId) }).populate('author').exec()
     ];
 
@@ -102,7 +105,7 @@ router
           return res.redirect('back');
         }
 
-        console.log('result', post, comments);
+        console.log('result', post);
 
         res.render('post', { post, comments });
 
@@ -143,7 +146,40 @@ router
  * 编辑文章页面 - 提交
  */
 router
-  .post('/:postId/edit', (req: Request, res: Response, next: NextFunction) => {
+  .post('/:postId/edit', notLogin, postValidator, (req: Request, res: Response, next: NextFunction) => {
+
+    const { title, content } = req.body;
+    const author: string = req.session.user._id;
+    const postId: string = req.params.postId;
+
+    Post.findOneAndUpdate({
+      author: new Types.ObjectId(author),
+      _id: new Types.ObjectId(postId)
+    }, { title, content })
+      .exec()
+      .then((post: IPost) => {
+        req.flash('success', '编辑文章成功');
+        res.redirect(`/posts/${post._id}`);
+      })
+      .catch(next);
+
+  });
+
+router
+  .get('/:postId/remove', notLogin, (req: Request, res: Response, next: NextFunction) => {
+    const author: string = req.session.user._id;
+    const postId: string = req.params.postId;
+
+    Post.findOneAndRemove({
+      author: new Types.ObjectId(author),
+      _id: new Types.ObjectId(postId)
+    })
+      .exec()
+      .then(() => {
+        req.flash('success', '删除成功');
+        res.redirect('/posts');
+      })
+      .catch(next);
 
   });
 
