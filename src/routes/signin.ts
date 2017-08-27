@@ -2,12 +2,12 @@ import * as express from 'express';
 import { Router, Request, Response, NextFunction } from 'express';
 import { User, IUser } from '../models/User';
 import { Result, MappedError } from 'express-validator';
-// import { notLogin, login } from '../middlewares';
+import { login } from '../middlewares';
 
 const router: Router = express.Router();
 
 router
-  .get('/', (req: Request, res: Response) => {
+  .get('/', login, (req: Request, res: Response) => {
     res.render('signin');
   });
 
@@ -15,7 +15,7 @@ router
  * 登录表单提交，使用express-validator中间件进行参数校验，消毒
  */
 router
-  .post('/', (req: Request, res: Response, next: NextFunction) => {
+  .post('/', login, (req: Request, res: Response, next: NextFunction) => {
     req.checkBody({
       username: {
         notEmpty: true,

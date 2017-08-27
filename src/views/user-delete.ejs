@@ -1,0 +1,6 @@
+<%- include header %>
+<p><%= user.username %>, 你确定永久删除账号吗？ </p>
+<form method='post' action="/user/delete">
+  <input type="submit" value='是的,永久删除'/>
+</form>
+<%- include footer %>

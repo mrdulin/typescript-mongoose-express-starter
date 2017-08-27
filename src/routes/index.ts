@@ -3,6 +3,7 @@ import signin from './signin';
 import signup from './signup';
 import signout from './signout';
 import posts from './posts';
+import user from './user';
 
 export const routes = (app: Express) => {
   app.get('/', (req: Request, res: Response) => {
@@ -12,5 +13,5 @@ export const routes = (app: Express) => {
   app.use('/signup', signup);
   app.use('/signout', signout);
   app.use('/posts', posts);
-
+  app.use('/user', user);
 };

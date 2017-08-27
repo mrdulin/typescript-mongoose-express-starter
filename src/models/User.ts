@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { IPost } from './Post';
+import { IPost, Post } from './Post';
+import { Comment } from '../models/Comment';
 
-const { Schema } = mongoose;
+const { Schema, Types } = mongoose;
 const SALT_WORD_FACTOR: number = 10;
 
 export interface IUser extends Document, IMethods {
@@ -23,6 +24,7 @@ interface IMethods {
 
 type ComparePasswordCallback = (err: Error, same?: boolean) => void;
 
+//Schema只是一种简单的抽象，用以描述模型的样子以及它是如何工作的。数据的交互发生在模型上，而不是Schema上。
 const userSchema = new Schema({
   username: {
     type: String,
@@ -83,4 +85,22 @@ userSchema.methods.comparePassword = function (password: string, cb: ComparePass
     .catch(cb);
 };
 
+userSchema.statics = {
+  removeUserById(id: string) {
+    const author = new Types.ObjectId(id);
+    const arr: Array<Promise<any>> = [
+      Post.find({ author }, '_id').remove().exec(),
+      Comment.find({ author }, '_id').remove().exec(),
+      User.findByIdAndRemove(id).exec()
+    ];
+    return Promise.all(arr);
+  }
+};
+
+//注册模型
+//Mongoose将集合名字设置为users, 除非我们通过第三个参数来指定集合名。Mongoose默认会对模型名字使用小写复数形式
+//如下面的, 在数据库中会创建一个users集合
 export const User = mongoose.model<IUser>('User', userSchema);
+
+//随后想要获取模型，可以通过调用mongoose.model方法并提供模型名
+// console.log(mongoose.model('User'));

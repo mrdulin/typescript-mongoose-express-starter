@@ -2,17 +2,17 @@ import * as express from 'express';
 import { Router, Request, Response, NextFunction } from 'express';
 import { User } from '../models/User';
 import { Result, MappedError } from 'express-validator';
-// import { loginCheck } from '../middlewares';
+import { login } from '../middlewares';
 
 const router: Router = express.Router();
 
 router
-  .get('/', (req: Request, res: Response) => {
+  .get('/', login, (req: Request, res: Response) => {
     res.render('signup');
   });
 
 router
-  .post('/', (req: Request, res: Response, next: NextFunction) => {
+  .post('/', login, (req: Request, res: Response, next: NextFunction) => {
 
     req.checkBody({
       username: {
@@ -56,6 +56,7 @@ router
               }
               next(err);
             } else {
+              req.flash('success', '注册成功');
               //TODO: 从user中删除password字段
               req.session!.user = user;
 
