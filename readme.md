@@ -5,6 +5,12 @@ __简介:__
 * 基于`cookie`和`sessionId`的用户认证方式
 * 服务器端使用`connect-mongo`将`session`持久化到`MongoDB`中
 
+__使用方式：__
+
+* `mongod --auth`
+* 新开终端窗口, `yarn run build:w`开启`webpack`监视模式，编译源代码
+* 新开终端窗口, `yarn run serve`，使用`nodemon`运行并监视编译后`build/server.js`文件
+
 __FAQ:__
 
 * 查看当前数据库连接数
@@ -23,3 +29,6 @@ __FAQ:__
 3. 用户只能在用户所在数据库登录，包括管理员账号。
 4. 管理员可以管理所有数据库，但是不能直接管理其他数据库，要先在admin数据库认证后才可以。
 
+* 开启`MongoDB`用户权限
+
+`mongod --auth`

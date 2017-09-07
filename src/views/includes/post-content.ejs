@@ -14,7 +14,7 @@
         <h3><a href="/posts/<%= post._id %>"><%= post.title %></a></h3>
         <pre><%- post.convertMarkdownToHtml() %></pre>
         <div>
-          <span class="tag"><%= post.created_at %></span>
+          <span class="tag">创建于&nbsp;&nbsp;<%= moment(new Date(post.created_at).getTime()).format('YYYY-MM-DD HH:mm') %></span>
           <span class="tag right">
             <span>浏览(<%= post.pv %>)</span>
             <span>留言(<%= post.commentsCount %>)</span>
