@@ -7,6 +7,7 @@
   "author": "mrdulin <novaline@qq.com>",
   "license": "MIT",
   "scripts": {
+    "test": "echo test",
     "build:w": "rimraf ./build && webpack -w --progress",
     "serve": "nodemon ./build/server.js",
     "build": "rimraf ./build && webpack --progress",
