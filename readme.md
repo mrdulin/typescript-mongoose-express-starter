@@ -1,22 +1,24 @@
-__简介:__
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e838f8d8e0e45018d5139dc9e569503)](https://www.codacy.com/app/novaline.dulin/typescript-mongoose-express-starter?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mrdulin/typescript-mongoose-express-starter&amp;utm_campaign=Badge_Grade)
+
+## 简介
 
 * 功能：用户注册，登录，账号删除，发表/修改/删除文章(支持markdown编辑)，发表/删除评论
 * 使用`ejs`拼模板，完全采用服务器端页面渲染，表单提交，页面重定向。前端只负责UI交互效果。
 * 基于`cookie`和`sessionId`的用户认证方式
 * 服务器端使用`connect-mongo`将`session`持久化到`MongoDB`中
 
-__使用方式：__
+## 使用
 
 * `mongod --auth`
 * 新开终端窗口, `yarn run build:w`开启`webpack`监视模式，编译源代码
 * 新开终端窗口, `yarn run serve`，使用`nodemon`运行并监视编译后`build/server.js`文件
 
-__关于调试：__
+## 调试
 
 * 在`vscode`的`launch.json`文件中添加配置
 * 直接在`ts`源码中打断点，而不是在编译后的文件，程序以调试模式运行后（尽管运行的是编译后的文件，但是由于生成了`sourcemap`文件），断点的位置会映射到源文件中。
 
-__FAQ:__
+## FAQ
 
 * 查看当前数据库连接数
 ```bash
