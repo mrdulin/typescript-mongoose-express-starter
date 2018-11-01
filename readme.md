@@ -1,4 +1,4 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e838f8d8e0e45018d5139dc9e569503)](https://www.codacy.com/app/novaline.dulin/typescript-mongoose-express-starter?utm_source=github.com&utm_medium=referral&utm_content=mrdulin/typescript-mongoose-express-starter&utm_campaign=Badge_Grade) [![Greenkeeper badge](https://badges.greenkeeper.io/mrdulin/typescript-mongoose-express-starter.svg)](https://greenkeeper.io/)
+[![Codacy Badge][codacy_badge]][codacy_link] [![Build Status][travis_badge]][travis_link]
 
 ## 简介
 
@@ -40,3 +40,8 @@
 - 开启`MongoDB`用户权限
 
 `mongod --auth`
+
+[codacy_badge]: https://api.codacy.com/project/badge/Grade/2e838f8d8e0e45018d5139dc9e569503
+[codacy_link]: https://www.codacy.com/app/novaline.dulin/typescript-mongoose-express-starter?utm_source=github.com&utm_medium=referral&utm_content=mrdulin/typescript-mongoose-express-starter&utm_campaign=Badge_Grade
+[travis_badge]: https://travis-ci.org/mrdulin/typescript-mongoose-express-starter.svg
+[travis_link]: https://travis-ci.org/mrdulin/typescript-mongoose-express-starter
