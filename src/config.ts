@@ -1,12 +1,17 @@
 const config = {
+  NODE_ENV: process.env.NODE_ENV || 'development',
+
   COOKIE_SECRET: '7WN67f36',
-  DB_URI: 'mongodb://root:365715693@localhost:27017/typescript-mongoose-express-starter',
-  DEFAULT_PORT: '2222',
-  DOMAIN: 'localhost',
   MAX_AGE: 60 * 60 * 1000,
 
-  TITLE: 'SIMPLE-BLOG',
-  DESCRIPTION: 'A SIMPLE BLOG BUILD WITH EXPRESS, MONGODB, TYPESCRIPT, MONGOOSE'
+  MONGODB_USER: process.env.MONGODB_USER,
+  MONGODB_PWD: process.env.MONGODB_PWD,
+  MONGODB_DB_NAME: process.env.MONGODB_DB_NAME || 'typescript-mongoose-express-starter',
+  MONGODB_HOST: process.env.MONGODB_HOST || 'ds145093.mlab.com',
+  MONGODB_PORT: process.env.MONGODB_PORT || '45093',
+
+  PORT: process.env.PORT || '3000',
+  HOST: process.env.HOST || 'localhost'
 };
 
 export default config;

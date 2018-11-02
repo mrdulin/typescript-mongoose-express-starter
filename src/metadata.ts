@@ -1,0 +1,6 @@
+const metadata = {
+  TITLE: 'SIMPLE-BLOG',
+  DESCRIPTION: 'A SIMPLE BLOG BUILD WITH EXPRESS, MONGODB, TYPESCRIPT, MONGOOSE'
+};
+
+export { metadata };
