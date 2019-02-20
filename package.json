@@ -25,7 +25,7 @@
     "@types/express-serve-static-core": "^4.0.50",
     "@types/express-session": "^1.15.3",
     "@types/marked": "^0.4.2",
-    "@types/mongoose": "^5.2.22",
+    "@types/mongoose": "^5.3.18",
     "@types/morgan": "^1.7.32",
     "@types/node": "^10.12.1",
     "@types/webpack": "^4.4.17",
