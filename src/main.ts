@@ -2,11 +2,9 @@ import { MongoConnect } from './db';
 import { buildHttpServer } from './server';
 import config from './config';
 
-function main() {
-  MongoConnect();
+(async function main() {
+  await MongoConnect();
   buildHttpServer({
-    port: config.PORT
+    port: config.PORT,
   });
-}
-
-main();
+})();

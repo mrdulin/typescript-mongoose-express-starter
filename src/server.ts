@@ -14,7 +14,9 @@ function buildHttpServer(options: any) {
 
   server.listen(port);
   server.on('error', onError);
-  server.on('listening', onListening);
+  server.on('listening', () => {
+    console.log(`服务器已启动: http://localhost:${port}`);
+  });
 
   app.use((req: any, res, next) => {
     res.locals.user = req.session.user;
@@ -41,7 +43,7 @@ function buildHttpServer(options: any) {
       console.log(err.message + '/n' + err.status + '/n' + err.stack);
       res.render('error', {
         message: err.message,
-        error: err
+        error: err,
       });
     }
 
@@ -69,12 +71,6 @@ function buildHttpServer(options: any) {
       default:
         throw error;
     }
-  }
-
-  function onListening() {
-    const addr = server.address();
-    const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    console.log('服务器已启动，监听端口: ' + bind);
   }
 }
 

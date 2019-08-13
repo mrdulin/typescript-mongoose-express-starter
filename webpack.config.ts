@@ -6,37 +6,30 @@ import nodeExternals = require('webpack-node-externals');
 const config: webpack.Configuration = {
   target: 'node',
   devtool: 'source-map',
-  entry: {
-    server: path.resolve(__dirname, './src/server.ts')
-  },
+  entry: path.resolve(__dirname, './src/main.ts'),
+  mode: 'development',
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'server.js',
+    filename: '[name].js',
     pathinfo: true,
-    devtoolModuleFilenameTemplate: '[absolute-resource-path]'
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader'
-      }
-    ]
+        loader: 'ts-loader',
+      },
+    ],
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json'],
     alias: {
-      models: path.resolve(__dirname, 'src/models')
-    }
+      models: path.resolve(__dirname, 'src/models'),
+    },
   },
-  plugins: [
-    new CopyWebpackPlugin([
-      { from: './src/views', to: 'views' },
-      { from: './src/public', to: 'public' }
-    ])
-  ],
-  externals: [nodeExternals()]
+  plugins: [new CopyWebpackPlugin([{ from: './src/views', to: 'views' }, { from: './src/public', to: 'public' }])],
+  externals: [nodeExternals()],
 };
 
 export default config;

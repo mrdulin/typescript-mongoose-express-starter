@@ -1,19 +1,19 @@
 [![Codacy Badge][codacy_badge]][codacy_link] [![Build Status][travis_badge]][travis_link] [![Greenkeeper badge][greenkeeper_badge]][greenkeeper_link]
 
-## 简介
+## Introduce
 
 - 功能：用户注册，登录，账号删除，发表/修改/删除文章(支持 markdown 编辑)，发表/删除评论
 - 使用`ejs`拼模板，完全采用服务器端页面渲染，表单提交，页面重定向。前端只负责 UI 交互效果。
 - 基于`cookie`和`sessionId`的用户认证方式
 - . 服务器端使用`connect-mongo`将`session`持久化到`MongoDB`中
 
-## 使用
+## Usage
 
-- `mongod --auth`
-- 新开终端窗口, `yarn run build:w`开启`webpack`监视模式，编译源代码
-- 新开终端窗口, `yarn run serve`，使用`nodemon`运行并监视编译后`build/server.js`文件
+```bash
+npm run dev
+```
 
-## 调试
+## Debug
 
 - 在`vscode`的`launch.json`文件中添加配置
 - 直接在`ts`源码中打断点，而不是在编译后的文件，程序以调试模式运行后（尽管运行的是编译后的文件，但是由于生成了`sourcemap`文件），断点的位置会映射到源文件中。

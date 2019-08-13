@@ -4,11 +4,10 @@ import { Router, Request, Response } from 'express';
 
 const router: Router = express.Router();
 
-router
-  .get('/', (req: Request, res: Response) => {
-    req.session!.destroy(() => {
-      res.redirect('/signin');
-    });
+router.get('/', (req: Request, res: Response) => {
+  req.session!.destroy(() => {
+    res.redirect('/signin');
   });
+});
 
 export default router;

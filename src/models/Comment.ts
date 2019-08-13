@@ -14,24 +14,25 @@ export interface IComment extends Document {
 const commentSchema = new Schema({
   author: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   post: {
     type: Schema.Types.ObjectId,
-    ref: 'Post'
+    ref: 'Post',
   },
   content: String,
   created_at: {
     type: Date,
-    default: Date.now()
-  }
+    default: Date.now(),
+  },
 });
 
 export const Comment = mongoose.model<IComment>('Comment', commentSchema);
 
 commentSchema.statics = {
   getCountByPostId(id: string): Promise<number> {
-    return Comment.find({ post: new Types.ObjectId(id) }).count().exec();
-  }
+    return Comment.find({ post: new Types.ObjectId(id) })
+      .count()
+      .exec();
+  },
 };
-

@@ -31,44 +31,44 @@ const userSchema = new Schema({
     unique: true,
     required: true,
     trim: true,
-    validate: {
-      validator: (name: string): boolean => name.length > 4,
-      msg: '用户名必须大于4个字符'
-    }
+    minlength: [4, '用户名必须大于4个字符'],
   },
   gender: String,
   password: {
     type: String,
     trim: true,
     required: true,
-    minlength: [3, '密码必须大于3个字符']
+    minlength: [3, '密码必须大于3个字符'],
   },
   email: {
     type: String,
-    trim: true
+    trim: true,
   },
   bio: {
     type: String,
-    trim: true
+    trim: true,
   },
   createdOn: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
   modifiedOn: Date,
   lastLogin: Date,
 
-  posts: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Post'
-  }]
+  posts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    },
+  ],
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function(next: mongoose.HookNextFunction) {
   const user: IUser = this;
   if (!user.isModified('password')) return next();
 
-  bcrypt.genSalt(SALT_WORD_FACTOR)
+  bcrypt
+    .genSalt(SALT_WORD_FACTOR)
     .then((salt: string) => {
       return bcrypt.hash(user.password, salt).then((encrypted: string) => {
         user.password = encrypted;
@@ -78,9 +78,10 @@ userSchema.pre('save', function (next) {
     .catch(next);
 });
 
-userSchema.methods.comparePassword = function (password: string, cb: ComparePasswordCallback) {
+userSchema.methods.comparePassword = function(password: string, cb: ComparePasswordCallback) {
   const user: IUser = this;
-  bcrypt.compare(password, user.password)
+  bcrypt
+    .compare(password, user.password)
     .then((same: boolean) => cb(null, same))
     .catch(cb);
 };
@@ -89,12 +90,16 @@ userSchema.statics = {
   removeUserById(id: string) {
     const author = new Types.ObjectId(id);
     const arr: Array<Promise<any>> = [
-      Post.find({ author }, '_id').remove().exec(),
-      Comment.find({ author }, '_id').remove().exec(),
-      User.findByIdAndRemove(id).exec()
+      Post.find({ author }, '_id')
+        .remove()
+        .exec(),
+      Comment.find({ author }, '_id')
+        .remove()
+        .exec(),
+      User.findByIdAndRemove(id).exec(),
     ];
     return Promise.all(arr);
-  }
+  },
 };
 
 //注册模型

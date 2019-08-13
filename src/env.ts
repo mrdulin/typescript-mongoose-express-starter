@@ -10,9 +10,8 @@ import * as connectMongo from 'connect-mongo';
 import flash = require('connect-flash');
 import expressValidator = require('express-validator');
 import * as Ejs from 'ejs';
-import moment from 'moment';
-import mongoose from 'mongoose';
-
+import * as moment from 'moment';
+import * as mongoose from 'mongoose';
 import config from './config';
 import { metadata } from './metadata';
 
@@ -25,16 +24,16 @@ const setupEnvironment = (app: Application) => {
   const MongoStore: connectMongo.MongoStoreFactory = connectMongo(session);
   const mongoStore: connectMongo.MongoStore = new MongoStore({
     autoReconnect: true,
-    mongooseConnection: mongoose.connection
+    mongooseConnection: mongoose.connection,
   });
 
   //设置模板全局变量
   Object.assign(app.locals, {
     blog: {
       title: metadata.TITLE,
-      description: metadata.DESCRIPTION
+      description: metadata.DESCRIPTION,
     },
-    moment
+    moment,
   });
 
   app.use('/lib', express.static(libDir));
@@ -47,14 +46,14 @@ const setupEnvironment = (app: Application) => {
         maxAge: config.MAX_AGE,
         domain: config.HOST,
         httpOnly: true,
-        path: '/'
+        path: '/',
       },
       name: 'tmes.sid',
       resave: false,
       saveUninitialized: false,
       // store: new session.MemoryStore()
-      store: mongoStore
-    })
+      store: mongoStore,
+    }),
   );
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());

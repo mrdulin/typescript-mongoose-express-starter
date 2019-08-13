@@ -19,46 +19,47 @@ export interface IPost extends Document {
 const postSchema = new Schema({
   author: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   comments: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Comment'
-    }
+      ref: 'Comment',
+    },
   ],
   title: String,
   content: String,
   created_at: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
   pv: {
     type: Number,
-    default: 0
+    default: 0,
   },
   commentsCount: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 postSchema.methods = {
   convertMarkdownToHtml(): string {
     return marked(this.content);
-  }
+  },
 };
 
 postSchema.statics = {
   setCommentsCount(posts: IPost[]) {
-    return Promise.all(posts.map((post: IPost) => {
-      return Comment.schema.statics.getCountByPostId(post._id).then((count: number) => {
-        post.commentsCount = count;
-        return post;
-      });
-    }));
-  }
+    return Promise.all(
+      posts.map((post: IPost) => {
+        return Comment.schema.statics.getCountByPostId(post._id).then((count: number) => {
+          post.commentsCount = count;
+          return post;
+        });
+      }),
+    );
+  },
 };
 
 export const Post = mongoose.model<IPost>('Post', postSchema);
-

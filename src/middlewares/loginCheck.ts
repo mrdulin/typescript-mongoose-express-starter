@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export const notLogin = (req: Request, res: Response, next: NextFunction) => {
   if (!req.session!.user) {
@@ -15,4 +15,3 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
   }
   next();
 };
-
