@@ -9,13 +9,10 @@
       "request": "launch",
       "name": "server",
       "cwd": "${workspaceRoot}",
-      "program": "${workspaceRoot}/src/server.ts",
+      "program": "${workspaceRoot}/src/main.ts",
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceRoot}/build/server.js"
-      ],
+      "outFiles": ["${workspaceRoot}/build/main.js"],
       "console": "externalTerminal"
-
     }
   ]
 }
