@@ -22,7 +22,7 @@
   ],
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
-    "@types/body-parser": "^1.16.5",
+    "@types/body-parser": "^1.17.1",
     "@types/connect-flash": "^0.0.34",
     "@types/connect-mongo": "^0.0.39",
     "@types/cookie-parser": "^1.4.1",
