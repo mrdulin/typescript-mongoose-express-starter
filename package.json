@@ -34,7 +34,7 @@
     "@types/marked": "^0.4.2",
     "@types/mongoose": "^5.2.22",
     "@types/morgan": "^1.7.36",
-    "@types/node": "^10.12.1",
+    "@types/node": "^12.7.10",
     "@types/webpack": "^4.4.17",
     "@types/webpack-node-externals": "^1.6.3",
     "copy-webpack-plugin": "^4.0.1",
