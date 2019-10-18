@@ -32,7 +32,7 @@
     "@types/express-serve-static-core": "^4.16.7",
     "@types/express-session": "^1.15.13",
     "@types/marked": "^0.4.2",
-    "@types/mongoose": "^5.2.22",
+    "@types/mongoose": "^5.5.22",
     "@types/morgan": "^1.7.36",
     "@types/node": "^10.12.1",
     "@types/webpack": "^4.4.17",
