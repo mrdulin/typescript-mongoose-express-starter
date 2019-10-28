@@ -24,7 +24,7 @@
     "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.16.5",
     "@types/connect-flash": "^0.0.35",
-    "@types/connect-mongo": "^0.0.39",
+    "@types/connect-mongo": "^3.0.0",
     "@types/cookie-parser": "^1.4.1",
     "@types/copy-webpack-plugin": "^4.0.1",
     "@types/ejs": "^2.6.3",
