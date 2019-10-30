@@ -35,7 +35,7 @@
     "@types/mongoose": "^5.2.22",
     "@types/morgan": "^1.7.36",
     "@types/node": "^10.12.1",
-    "@types/webpack": "^4.4.17",
+    "@types/webpack": "^4.39.6",
     "@types/webpack-node-externals": "^1.6.3",
     "copy-webpack-plugin": "^4.0.1",
     "nodemon": "^1.19.1",
