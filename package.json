@@ -52,7 +52,7 @@
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^2.0.1",
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "1.4.4",
     "cross-env": "^5.0.5",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
